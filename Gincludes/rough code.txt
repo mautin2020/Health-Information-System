@@ -1,0 +1,365 @@
+rou$error = array(
+	"todo" => "",
+	"last_name" => "",
+	"username" => "",
+	"email" => "",
+	"password1" => "",
+	"top" => "",
+	"success" => ""
+);	
+
+if ((isset($_POST['time']))) {
+    $todo=$_POST['time'];
+    $month=$_POST['hour'];
+    $day=$_POST['minutes'];
+    $year=$_POST['seconds'];
+    $time_value="$hour:$minutes:$seconds";
+    echo "mm/dd/yyyy format :$date_value<br>";
+    $date_value="$year-$month-$dt";
+    echo "YYYY-mm-dd format :$date_value<br>";
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Handle the form.
+		
+	// Need the database connection:
+	require(MYSQL);
+	// Trim all the incoming data:
+	
+	$trimmed = array_map('trim', $_POST);
+	// Assume invalid values:
+	$todon = $stotime = $ctotime = $se = $dn = FALSE;
+
+    // Check for a registration number:
+    if (!isset($trimmed['todo']) && $trimmed['todo'] ="") {
+        $error["todo"] = "Please choose schedule date!";
+    } else {
+        $todon = mysqli_real_escape_string($dbc, $trimmed['todo']);
+   }
+}
+
+
+
+
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="js/doctor_schedule.js"></script>
+</head>
+<body>
+        <section>
+                <div class="row mb-5 pt-5">
+                </div>
+                      <div class="container-fluid">
+                        <div class="row">
+                <div class="col-xl-10 col-lg-9 col-md-8  pt-4 ml-auto">
+                  <div class="row align-items-center mb-5">
+                    <div class="col-xl-7">
+                      <h4 class="text-primary mb-4">Doctor's Schedule</h4>
+                      
+                        <div class="card">
+                          <div class="card-header">
+                            <button class="btn btn-block bg-primary text-light
+                            text-left" data-toggle="modal" data-target="#doctor-schedule"> 
+                            Click to add doctor's schedule
+                            </button>
+                        <div class="modal fade" id="doctor-schedule">
+                          <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title">Doctor Schedule</h5>
+                                <p id="results"></p>
+                                <button type="button" class="close" data-dismiss="modal">&times;
+                                </button>
+                              </div>
+                              <div class="modal-body">    
+                                  <form action="doctor_schedule.php" method="post" id="doctor_schedule">
+                                        <script>
+                                            $(function() {
+                                                $( "#datepicker" ).datepicker(({ dateFormat: "yy-mm-dd" }));
+                                            });
+                                            
+                                        </script>
+                                        <p id ="dateP">Date:
+                                        <input type="text" name="datepicker" id="datepicker" class="form-control">
+                                        <small class="errorMessage text-danger" id="dateError">Please Choose date</small></p>
+                                        
+                                    <?php
+                                    require(MYSQL);
+                                    echo '<p id = "doctorP">Doctor\'s Name:';
+                                    echo '<select name="doctor_name" id="doctor_name" class="form-control">
+                                    <option>Select Name</option>';
+                                    $user_id = $_SESSION['user_id'];
+                                    $q = "SELECT CONCAT(first_name, ' ', last_name) AS name FROM users WHERE user_level=2";
+                                    $r = @mysqli_query($dbc, $q); // Run the query.
+                                    while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) 
+                                    {
+                                      echo '<option value = "'.$row['user_id'].'">'.$row['name'].'</option>';
+                                    } 
+                                    echo '</select>';
+                                  echo '<small class="errorMessage text-danger" id="dnameerror">Please Choose a doctor name</small></p>';
+                                    
+                                    echo '<p id = "sectionP">Section:
+                                    <select name="section" class="form-control">
+                                            <option></option>
+                                            <option value="OPG">OPG</option>
+                                             <option value="Casualty">Casualty</option>
+                                            <option value="Heart-to-Heart">Heart-to-Heart</option>
+                                    </select>';
+                                    echo '<small class="errorMessage text-danger" id="sectionerror">Please select section</small></p>';
+                                    
+                                    echo '<label>Starting time</label><br>';                                    
+                                    echo '<select name="hour">';
+                                        for ($hour = 1; $hour <=12; $hour++) {
+                                            echo "<option value=\"$hour\">
+                                                $hour</option>\n";
+                                        }
+                                    echo '</select>';
+                                    ?>
+                                    
+                                    
+                                    <?php
+                                    
+                                    $minutes = array (1 => '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22',
+                                    '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50',
+                                    '51', '52', '53', '54', '55', '56', '57', '58', '59', '60');
+                                   
+                                    // Make the minutes pull-down menu
+                                    echo '<select name="minutes">';
+                                      foreach ($minutes as $key => $value) {
+                                        echo "<option value=\"$minutes\">
+                                        $value</option>\n";
+                                            }
+                                        echo '</select>';
+                                        
+                                        $seconds= array (1 => '00');
+                                        
+                                        // Make the seconds pull-down menu
+                                        echo '<select name="seconds">';
+                                          foreach ($seconds as $key => $value) {
+                                            echo "<option value=\"$seconds\">
+                                            $value</option>\n";
+                                                }
+                                            echo '</select>';
+
+                                        $tme = array (1 => 'am', 'pm',);
+                                    
+                                    // Make the tme pull-down menu 
+                                    echo '<select name="tme">';
+                                    foreach ($tme as $key => $value) {
+                                        echo "<option value=\"$tme\">
+                                        $value</option>\n";
+                                    }
+                                    echo '</select>
+                                    <br>
+                                    <br>';
+                                    ?>
+
+                                    <?php
+                                    echo '<label>Closing time</label><br>';                                    
+                                    echo '<select name="hour1">';
+                                        for ($hour1 = 1; $hour1 <=12; $hour1++) {
+                                            echo "<option value=\"$hour1\">
+                                                $hour1</option>\n";
+                                        }
+                                    echo '</select>';
+                                    
+
+                                    $minutes1 = array (1 => '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22',
+                                    '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50',
+                                    '51', '52', '53', '54', '55', '56', '57', '58', '59', '60');
+                                   
+                                    // Make the minutes1 pull-down menu
+                                    echo '<select name="minutes1">';
+                                      foreach ($minutes1 as $key => $value) {
+                                        echo "<option value=\"$minutes1\">
+                                        $value</option>\n";
+                                            }
+                                        echo '</select>';
+                                        
+                                        $seconds1 = array (1 => '00');
+                                        
+                                        // Make the seconds1 pull-down menu
+                                        echo '<select name="seconds1">';
+                                          foreach ($seconds1 as $key => $value) {
+                                            echo "<option value=\"$seconds1\">
+                                            $value</option>\n";
+                                                }
+                                            echo '</select>';
+
+                                        $tme1 = array (1 => 'am', 'pm',);
+                                    
+                                    // Make the tme1 pull-down menu 
+                                    echo '<select name="tme1">';
+                                    foreach ($tme1 as $key => $value) {
+                                        echo "<option value=\"$tme1\">
+                                        $value</option>\n";
+                                    }
+                                    echo '</select>';
+                                    
+                                                                                                          
+                                         
+                             echo '</div>';
+                              echo '<div class="modal-footer">
+                                    <input type="submit" class="btn btn-primary" name="submit" value="Save">
+                                    </form>';
+                                    ?> 
+                                    <button type="button" class="btn btn-danger" 
+                                data-dismiss="modal">Back</button>
+                                </form>
+                              </div>
+                            </div>
+                    
+                          </div>
+                    
+                        </div>
+                
+                          </div>
+                          
+                            <div class="card-body">
+                              Lorem, ipsum dolor sit amet consectetur
+                              adipisicing elit. Reiciendis earum modi delectus
+                              fugiat, sonsectetur eaque harum obcaecati, seape id 
+                              vitae, dolore aliquam! Quos, doloribus quisquar.
+                            </div>
+                          </div>
+                        </div>     
+                
+                    </body>            
+        </section>                
+</html>
+
+
+$(document).on('click','#btn-add',function(e) {
+    var data = $("#user_form").serialize();
+    $.ajax({
+        data: data,
+        type: "post",
+        url: "save.php",
+        success: function(dataResult){
+                var dataResult = JSON.parse(dataResult);
+                if(dataResult.statusCode==200){
+                    $('#addEmployeeModal').modal('hide');
+                    alert('Data added successfully !'); 
+                    location.reload();						
+                }
+                else if(dataResult.statusCode==201){
+                   alert(dataResult);
+                }
+        }
+    });
+});
+
+<!-- file upload -->
+
+ <!doctype html>
+<html>
+<head lang="en">
+<meta charset="utf-8">
+<title>Ajax File Upload with jQuery and PHP</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+<div class="row">
+
+<div class="col-md-8">
+
+<h1><a href="#" target="_blank"><img src="logo.png" width="80px"/>Ajax File Uploading with Database MySql</a></h1>
+<hr> 
+<input id="uploadImage" type="file" accept="image/*" name="image" class="uploadimg"/>
+<input id="uploadImage1" type="file" accept="image/*" name="image1" class="uploadimg" />
+
+<div id="err"></div>
+</div>
+</div>
+</div>
+<script>
+$(document).ready(function(){
+    $('.uploadimg').on('change', function() {
+        console.log("test");
+    var file_data = $(this).prop('files')[0];   
+    var form_data = new FormData();
+    var ext = $(this).val().split('.').pop().toLowerCase();
+    if ($.inArray(ext, ['png','jpg','jpeg']) == -1)   {
+        alert("only jpg and png images allowed");
+        return;
+    }  
+    var picsize = (file_data.size);
+    console.log(picsize); /*in byte*/
+    if(picsize > 2097152) /* 2mb*/
+        {
+            alert("Image allowd less than 2 mb")
+            return;
+        }
+    form_data.append('file', file_data);   
+    $.ajax({
+        url: 'upload.php', /*point to server-side PHP script */
+        dataType: 'text',  /* what to expect back from the PHP script, if anything*/
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,                         
+        type: 'post',
+        success: function(res){
+           console.log(res);
+        }
+     });
+});
+})
+
+</script>
+</body></html>
+
+The php script 
+
+ <?php
+$valid_extensions = array('jpeg', 'jpg','png'); 
+
+    if ( 0 < $_FILES['file']['error'] ) {
+        echo 'Error: ' . $_FILES['file']['error'] . '<br>';
+    }
+    else {
+       
+        $code=mt_rand(10,100000);/* rename the file name*/
+        $size= $_FILES['file']['size'];
+        $ext = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
+        if($size > 2097152) /*2 mb 1024*1024 bytes*/
+        {
+            echo json_encode(array("statusCode"=>400,'msg'=>"Image allowd less than 2 mb"));
+        }
+        else if(!in_array($ext, $valid_extensions)) {
+            echo json_encode(array("statusCode"=>400,'msg'=>$ext.' not allowed'));
+        }
+        else{
+           
+            $result = move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/' . $code.'.'.$ext);
+            echo json_encode(array("statusCode"=>200 ,'code'=>$code));
+        }
+        
+    }
+?>
+
+
+ <td class="bg-info">PID</td> 
+                                    <td class="bg-info">Reg No</td>  
+                                    <td class="bg-info">First Name</td>  
+                                    <td class="bg-info">Last Name</td>  
+                                    <td class="bg-info">Address</td>
+                                    <td class="bg-info">Tel No</td>
+                                    <td class="bg-info">Gender</td>  
+                                    <td class="bg-info">Age</td> 
+
+  <td>'.$row["pd_id"].'</td>   
+                                    <td>'.$row["registration_number"].'</td>  
+                                    <td>'.$row["first_name"].'</td>  
+                                    <td>'.$row["last_name"].'</td>  
+                                    <td>'.$row["patient_address"].'</td>  
+                                    <td>'.$row["telephone_number"].'</td>  
+                                    <td>'.$row["gender"].'</td>  
+                                    <td>'.$row["age"].'</td>                                      

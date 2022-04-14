@@ -1,0 +1,29 @@
+
+<script>
+ $(function () {
+$("body").on("focus", ".time-input", function() {
+    if (!$(this).data('xdsoft_datetimepicker')) {
+      $(this).datetimepicker({
+        onGenerate: function() {
+          if (!$(this).hasClass('initial')) {
+            $(this).addClass('initial').triggerHandler('open.xdsoft');
+          }
+        }
+      });
+    }
+  });
+  
+  $('button').click(function() {
+    $('#ct').append('<input class="time-input" />');
+  });
+});
+
+</script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.4.5/jquery.datetimepicker.css" rel="stylesheet" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.4.5/jquery.datetimepicker.js"></script>
+  
+  <div id="ct">
+    <input class="time-input" />
+  </div>
+  <button>Add</button>
